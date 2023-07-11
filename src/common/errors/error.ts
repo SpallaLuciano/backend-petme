@@ -5,7 +5,10 @@ export class CatchableException extends Error {
     super(message);
 
     if (error) {
-      console.error(error.message);
+      console.error(
+        'Error:',
+        JSON.stringify(error, Object.getOwnPropertyNames(error), 2),
+      );
     }
   }
 }

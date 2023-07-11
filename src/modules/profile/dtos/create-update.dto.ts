@@ -4,7 +4,7 @@ import { IsString, MinLength } from 'class-validator';
 import { parseISO } from 'date-fns';
 import { IsBeforeYears } from '../../../common';
 
-export class CreateDto {
+export class CreateProfileDto {
   @ApiProperty()
   @IsString()
   @MinLength(2)
@@ -20,7 +20,7 @@ export class CreateDto {
   @IsBeforeYears({
     years: 18,
   })
-  birthdate: string;
+  birthdate: Date;
 }
 
-export class UpdateDto extends PartialType(CreateDto) {}
+export class UpdateDto extends PartialType(CreateProfileDto) {}

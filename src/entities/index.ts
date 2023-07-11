@@ -10,3 +10,6 @@ export * from './health';
 export * from './chat';
 export * from './message';
 export * from './vaccine';
+export * from './owner-request';
+export * from './evidence';
+export * from './vaccination';

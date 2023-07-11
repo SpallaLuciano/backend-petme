@@ -38,7 +38,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   @WsAuth()
-  @SubscribeMessage('message')
+  @SubscribeMessage('new-message')
   async handleSendToUser(client: Socket, dto: MessageDto) {
     const userId = client.handshake['user'].id;
 
@@ -58,6 +58,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       content: dto.content,
       datetime: dto.datetime,
     });
+
+    client.emit('message', message);
 
     const receiverSocket = this.connectedClients.get(dto.receiverId);
 

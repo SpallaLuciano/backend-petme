@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { WarningException } from '../../common';
 import { VisitType } from '../../entities';
-import { CreateDto } from './dtos';
+import { CreateDto, UpdateDto } from './dtos';
 
 @Injectable()
 export class VisitTypeService {
@@ -43,6 +43,16 @@ export class VisitTypeService {
   }
 
   async findVisitTypes() {
-    return await this.visitTypeRepository.find();
+    return this.visitTypeRepository.find();
+  }
+
+  async updateVisitType(name: string, dto: UpdateDto) {
+    let visitType = await this.findByName(name);
+
+    visitType = Object.assign(visitType, dto);
+
+    visitType = await this.visitTypeRepository.save(visitType);
+
+    return visitType;
   }
 }

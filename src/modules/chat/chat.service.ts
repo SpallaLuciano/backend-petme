@@ -37,4 +37,15 @@ export class ChatService {
 
     return chat;
   }
+
+  async findAllChatsByUser(userId: string) {
+    const chats = await this.chatRepository
+      .createQueryBuilder('chats')
+      .leftJoinAndSelect('chats.users', 'profile')
+      .leftJoinAndSelect('chats.messages', 'messages')
+      .where('profile.userId = :userId', { userId })
+      .getMany();
+
+    return chats;
+  }
 }

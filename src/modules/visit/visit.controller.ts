@@ -10,7 +10,7 @@ import {
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Auth, Response, successResponse } from '../../common';
-import { Visit } from '../../entities';
+import { Health, Visit } from '../../entities';
 import { CreateDto, UpdateDto } from './dtos';
 import { VisitService } from './visit.service';
 
@@ -35,7 +35,7 @@ export class VisitController {
     @Request() req,
     @Param('petId') petId: string,
     @Body() dto: CreateDto,
-  ): Promise<Response<Visit>> {
+  ): Promise<Response<Health>> {
     const visit = await this.visitService.create(req.user.id, petId, dto);
 
     return successResponse(visit);
@@ -47,7 +47,7 @@ export class VisitController {
     @Request() req,
     @Param() visitId: string,
     @Body() dto: UpdateDto,
-  ): Promise<Response<Visit>> {
+  ): Promise<Response<Health>> {
     const visit = await this.visitService.update(req.user.id, visitId, dto);
 
     return successResponse(visit);
@@ -58,7 +58,7 @@ export class VisitController {
   async remove(
     @Request() req,
     @Param('visitId') visitId: string,
-  ): Promise<Response<boolean>> {
+  ): Promise<Response<Health>> {
     const result = await this.visitService.remove(req.user.id, visitId);
 
     return successResponse(result);

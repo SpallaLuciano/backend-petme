@@ -24,6 +24,8 @@ export class User extends BaseEntity {
 
   @OneToOne(() => Profile, (profile) => profile.user, {
     eager: true,
+    cascade: true,
+    onDelete: 'CASCADE',
   })
   profile: Profile;
 

@@ -19,21 +19,29 @@ export class PetService {
   async create(userId: string, dto: CreateDto): Promise<Pet> {
     const profile = await this.profileService.findByUser(userId);
 
-    const pet = this.petRepository.create({ ...dto, owner: profile });
+    let pet = this.petRepository.create({
+      ...dto,
+      owner: { id: profile.id },
+      health: {
+        weight: null,
+      },
+    });
 
-    await this.petRepository.save(pet);
+    pet = await this.petRepository.save(pet);
+
+    pet = await this.findById(pet.id);
 
     return pet;
   }
 
   async update(userId: string, petId: string, dto: UpdateDto): Promise<Pet> {
-    const pet = await this.findByUserAndId(userId, petId);
+    let pet = await this.findByUserAndId(userId, petId);
 
-    const updatedPet = Object.assign(pet, dto);
+    pet = Object.assign(pet, dto);
 
-    await this.petRepository.save(updatedPet);
+    pet = await this.petRepository.save(pet);
 
-    return updatedPet;
+    return pet;
   }
 
   async find(): Promise<Pet[]> {
@@ -42,12 +50,10 @@ export class PetService {
     return pets;
   }
 
-  async remove(userId: string, petId: string): Promise<boolean> {
+  async remove(userId: string, petId: string): Promise<Pet> {
     const pet = await this.findByUserAndId(userId, petId);
 
-    await this.petRepository.remove(pet);
-
-    return true;
+    return await this.petRepository.remove(pet);
   }
 
   async createImage(
@@ -67,16 +73,25 @@ export class PetService {
   }
 
   async removeImage(userId: string, imageId: string): Promise<Pet> {
-    const pet = await this.petRepository.findOneBy({
-      owner: { id: userId },
-      images: { id: imageId },
-    });
+    let pet = await this.petRepository
+      .createQueryBuilder('pet')
+      .leftJoinAndSelect('pet.images', 'image', 'image.id = :imageId', {
+        imageId,
+      })
+      .leftJoinAndSelect('pet.owner', 'owner', 'owner.userId = :userId', {
+        userId,
+      })
+      .getOne();
+
+    if (!pet) {
+      throw new WarningException(
+        'No tiene permisos para realizar la operacion',
+      );
+    }
 
     await this.fileService.removeImage(imageId);
 
-    pet.images = pet.images.filter((image) => image.id !== imageId);
-
-    await this.petRepository.save(pet);
+    pet = await this.findById(pet.id);
 
     return pet;
   }
@@ -105,6 +120,16 @@ export class PetService {
 
     if (!pet) {
       throw new WarningException('No se encontró la mascota');
+    }
+
+    return pet;
+  }
+
+  async findById(id: string): Promise<Pet> {
+    const pet = await this.petRepository.findOneBy({ id });
+
+    if (!pet) {
+      throw new WarningException('No se encontro la mascota');
     }
 
     return pet;

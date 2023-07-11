@@ -1,16 +1,22 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger';
-import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsEmail, IsNotEmpty, IsString, ValidateNested } from 'class-validator';
+import { CreateProfileDto } from '../../profile/dtos';
 
 export class CreateDto {
-  @ApiProperty()
+  @ApiProperty({ default: 'string@string.com' })
   @IsString()
   @IsEmail()
   email: string;
 
-  @ApiProperty()
+  @ApiProperty({ type: String })
   @IsString()
   @IsNotEmpty()
   password: string;
+
+  @ValidateNested()
+  @Type(() => CreateProfileDto)
+  profile: CreateProfileDto;
 }
 
 export class UpdateDto extends PartialType(CreateDto) {}

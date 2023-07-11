@@ -1,4 +1,9 @@
 import { MailerOptions } from '@nestjs-modules/mailer';
+import { readFileSync } from 'fs';
+
+//src\common\certificates
+
+const caCert = readFileSync('src/common/certificates/outlook-root-ca.crt');
 
 export const options: MailerOptions = {
   transport: {
@@ -7,7 +12,11 @@ export const options: MailerOptions = {
     secure: false,
     auth: {
       user: 'petme.cba@outlook.com',
-      pass: 'kfqbypbbobfwpgph',
+      pass: 'xqkcfmaaejepllud',
+    },
+    tls: {
+      ca: [caCert],
+      rejectUnauthorized: false,
     },
     requireTLS: true,
   },

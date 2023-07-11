@@ -59,11 +59,15 @@ export class CommentService {
     return updatedComment;
   }
 
-  async deleteComment(commentId: string): Promise<boolean> {
-    const comment = await this.findOneById(commentId);
+  async deleteComment(commentId: string, userId: string): Promise<Comment> {
+    let comment = await this.findOneById(commentId);
 
-    await this.commentRepository.remove(comment);
+    if (comment.author.id !== userId) {
+      throw new WarningException('No tiene permisos para borrar el comentario');
+    }
 
-    return true;
+    comment = await this.commentRepository.remove(comment);
+
+    return comment;
   }
 }

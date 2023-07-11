@@ -1,8 +1,9 @@
-import { ApiProperty, PartialType } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional, PartialType } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 import {
   IsNotEmpty,
   IsNumber,
+  IsOptional,
   IsPositive,
   IsString,
   IsUUID,
@@ -10,18 +11,22 @@ import {
 import { parseISO } from 'date-fns';
 
 export class CreateDto {
+  @ApiProperty()
   @IsString()
   @IsUUID()
   recipientId: string;
 
+  @ApiProperty()
   @IsString()
   @IsNotEmpty()
   comment: string;
 
-  @ApiProperty({ type: Date })
+  @ApiPropertyOptional({ type: Date })
+  @IsOptional()
   @Transform(({ value }) => parseISO(value))
   datetime: string;
 
+  @ApiProperty()
   @IsNumber()
   @IsPositive()
   rating: number;

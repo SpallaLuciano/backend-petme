@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { QueryRunner, Repository } from 'typeorm';
 import { User, UserValidation } from '../../entities';
 import { MailerService } from '../mailer/mailer.service';
 import { v5 as uuidV5 } from 'uuid';
@@ -14,7 +14,10 @@ export class UserValidationService {
     private mailerService: MailerService,
   ) {}
 
-  async sendVerificationMail(user: User): Promise<void> {
+  async sendVerificationMail(
+    user: User,
+    queryRunner: QueryRunner,
+  ): Promise<void> {
     const signUpToken = uuidV5('verification', user.id);
     const signUpDate = new Date();
 
@@ -24,7 +27,7 @@ export class UserValidationService {
       user,
     });
 
-    await this.userValidationRepository.save(validation);
+    await queryRunner.manager.save(validation);
 
     await this.mailerService.sendVerificationMail(user.email, signUpToken);
   }
@@ -33,8 +36,11 @@ export class UserValidationService {
     key: 'signUpToken' | 'recoverPasswordToken',
     token: string,
   ) {
-    const validation = this.userValidationRepository.findOneBy({
-      [key]: token,
+    const validation = await this.userValidationRepository.findOne({
+      where: {
+        [key]: token,
+      },
+      relations: { user: true },
     });
 
     if (!validation) {

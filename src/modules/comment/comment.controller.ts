@@ -1,4 +1,12 @@
-import { Controller, Get, Param, Post, Put, Request } from '@nestjs/common';
+import {
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+  Request,
+} from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Auth, Response, successResponse } from '../../common';
 import { Comment } from '../../entities';
@@ -37,6 +45,17 @@ export class CommentController {
       id,
       dto,
     );
+
+    return successResponse(comment);
+  }
+
+  @Auth()
+  @Delete(':id')
+  async remove(
+    @Request() req,
+    @Param('id') id: string,
+  ): Promise<Response<Comment>> {
+    const comment = await this.commentService.deleteComment(id, req.user.id);
 
     return successResponse(comment);
   }

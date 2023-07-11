@@ -13,7 +13,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiTags } from '@nestjs/swagger';
 import { Auth, Image, Response, successResponse } from '../../common';
 import { Profile } from '../../entities';
-import { CreateDto, UpdateDto } from './dtos';
+import { CreateProfileDto, UpdateDto } from './dtos';
 import { ProfileService } from './profile.service';
 
 @ApiTags('Perfiles')
@@ -40,7 +40,7 @@ export class ProfileController {
   @Post()
   async create(
     @Request() req,
-    @Body() dto: CreateDto,
+    @Body() dto: CreateProfileDto,
   ): Promise<Response<Profile>> {
     const profile = await this.profileService.create(req.user.id, dto);
 
@@ -61,7 +61,7 @@ export class ProfileController {
   @Image()
   @Auth()
   @Post('image')
-  @UseInterceptors(FileInterceptor('file'))
+  @UseInterceptors(FileInterceptor('file')) // Nest aclara que File Interceptor puede no funcionar en la nube
   async updateImage(
     @Request() req,
     @UploadedFile()

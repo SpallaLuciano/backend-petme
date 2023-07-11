@@ -14,6 +14,7 @@ export class Profile extends BaseEntity {
   @EncryptedColumn({ type: 'varchar', length: 255 })
   lastname: string;
 
+  @Exclude()
   @Column({ type: 'varchar', array: true, default: [] })
   favs: string[];
 
@@ -24,6 +25,7 @@ export class Profile extends BaseEntity {
   @OneToOne(() => User, {
     nullable: false,
     cascade: false,
+    eager: false,
   })
   @JoinColumn({ name: 'userId', referencedColumnName: 'id' })
   user: User;

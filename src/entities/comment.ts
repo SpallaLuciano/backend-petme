@@ -13,7 +13,7 @@ export class Comment extends BaseEntity {
   @Column({ type: 'varchar', length: 255 })
   comment: string;
 
-  @Column({ type: 'timestamp' })
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   datetime: Date;
 
   @Column({ type: 'float' })

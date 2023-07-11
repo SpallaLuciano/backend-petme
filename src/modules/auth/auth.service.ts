@@ -5,6 +5,7 @@ import { User } from '../../entities';
 import { UserValidationService } from '../user-validation/user-validation.service';
 import { UserService } from '../user/user.service';
 import { SignDto, UpdatePasswordDto } from './dtos';
+import { getExpirationDate } from '../../common/date';
 
 export interface SignResponse {
   user: User;
@@ -36,6 +37,7 @@ export class AuthService {
       const payload = {
         id: user.id,
         admin: user.admin,
+        expirationDate: getExpirationDate().toISOString(),
       };
 
       const token = await this.jwtService.signAsync(payload);

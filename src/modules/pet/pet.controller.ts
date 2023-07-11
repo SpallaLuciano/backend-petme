@@ -8,12 +8,14 @@ import {
   Put,
   Request,
   UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Auth, Image, Response, successResponse } from '../../common';
 import { Pet } from '../../entities';
 import { CreateDto, UpdateDto } from './dtos';
 import { PetService } from './pet.service';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @ApiTags('Mascotas')
 @Controller('pets')
@@ -36,32 +38,10 @@ export class PetController {
     return successResponse(pet);
   }
 
-  @Auth()
-  @Put(':id')
-  async update(
-    @Request() req,
-    @Param('id') id: string,
-    @Body() dto: UpdateDto,
-  ): Promise<Response<Pet>> {
-    const pet = await this.petService.update(req.user.id, id, dto);
-
-    return successResponse(pet);
-  }
-
-  @Auth()
-  @Delete(':id')
-  async remove(
-    @Request() req,
-    @Param('id') id: string,
-  ): Promise<Response<boolean>> {
-    const isRemoved = await this.petService.remove(req.user.id, id);
-
-    return successResponse(isRemoved);
-  }
-
   @Image()
   @Auth()
-  @Post('image/:id')
+  @Post('image/:id') // algo
+  @UseInterceptors(FileInterceptor('file')) // Nest aclara que File Interceptor puede no funcionar en la nube
   async updateImage(
     @Request() req,
     @Param('id') id: string,
@@ -89,5 +69,36 @@ export class PetController {
     const result = await this.petService.like(req.user.id, petId);
 
     return successResponse(result);
+  }
+
+  @Auth()
+  @Put(':id')
+  async update(
+    @Request() req,
+    @Param('id') id: string,
+    @Body() dto: UpdateDto,
+  ): Promise<Response<Pet>> {
+    const pet = await this.petService.update(req.user.id, id, dto);
+
+    return successResponse(pet);
+  }
+
+  @Auth()
+  @Delete(':id')
+  async remove(
+    @Request() req,
+    @Param('id') id: string,
+  ): Promise<Response<Pet>> {
+    const isRemoved = await this.petService.remove(req.user.id, id);
+
+    return successResponse(isRemoved);
+  }
+
+  @Auth()
+  @Get(':id')
+  async findById(@Param('id') id: string) {
+    const pet = await this.petService.findById(id);
+
+    return successResponse(pet);
   }
 }

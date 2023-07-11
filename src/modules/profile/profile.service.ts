@@ -5,7 +5,7 @@ import { ErrorException, WarningException } from '../../common';
 import { Profile } from '../../entities';
 import { FileService } from '../file/file.service';
 import { UserService } from '../user/user.service';
-import { CreateDto, UpdateDto } from './dtos';
+import { CreateProfileDto, UpdateDto } from './dtos';
 
 @Injectable()
 export class ProfileService {
@@ -34,7 +34,7 @@ export class ProfileService {
     return profiles;
   }
 
-  async create(userId: string, dto: CreateDto): Promise<Profile> {
+  async create(userId: string, dto: CreateProfileDto): Promise<Profile> {
     const user = await this.userService.findOneBy({
       id: userId,
     });
@@ -93,7 +93,7 @@ export class ProfileService {
   async removeImage(userId: string) {
     const profile = await this.findByUser(userId);
 
-    await this.fileService.removeImage(profile.image.id);
+    await this.fileService.removeImage(profile.image.id, 'profile');
 
     profile.image = null;
 
@@ -104,13 +104,14 @@ export class ProfileService {
 
   async petLike(profile: Profile, petId: string): Promise<boolean> {
     const isId = profile.favs.some((id) => id === petId);
-    let liked = true;
+    let liked;
 
     if (isId) {
       profile.favs = profile.favs.filter((id) => id !== petId);
       liked = false;
     } else {
       profile.favs.push(petId);
+      liked = true;
     }
 
     await this.profileRepository.save(profile);

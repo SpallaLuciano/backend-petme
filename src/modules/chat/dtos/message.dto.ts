@@ -13,11 +13,6 @@ export class MessageDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  chatId: string;
-
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
   content: string;
 
   @ApiProperty({ type: Date })

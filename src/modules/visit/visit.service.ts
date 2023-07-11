@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { WarningException } from '../../common';
-import { Visit } from '../../entities';
+import { Health, Visit } from '../../entities';
 import { HealthService } from '../health/health.service';
 import { VisitTypeService } from '../visit-type/visit-type.service';
 import { CreateDto, UpdateDto } from './dtos';
@@ -17,9 +17,12 @@ export class VisitService {
   ) {}
 
   async findOneByUserAndId(userId: string, visitId: string) {
-    const visit = await this.visitRepository.findOneBy({
-      id: visitId,
-      health: { pet: { owner: { user: { id: userId } } } },
+    const visit = await this.visitRepository.findOne({
+      where: {
+        id: visitId,
+        health: { pet: { owner: { user: { id: userId } } } },
+      },
+      relations: ['health'],
     });
 
     if (!visit) {
@@ -33,22 +36,28 @@ export class VisitService {
     return this.visitRepository.findBy({ health: { pet: { id: petId } } });
   }
 
-  async create(userId: string, petId: string, dto: CreateDto) {
+  async create(userId: string, petId: string, dto: CreateDto): Promise<Health> {
     const visitType = await this.visitTypeService.findByName(dto.visitType);
     const health = await this.healthService.findByPetAndUser(userId, petId);
 
     let visit = this.visitRepository.create({
       ...dto,
-      health: health,
+      health: { id: health.id },
       type: visitType,
     });
 
     visit = await this.visitRepository.save(visit);
 
-    return visit;
+    health.visits.push(visit);
+
+    return health;
   }
 
-  async update(userId: string, visitId: string, dto: UpdateDto) {
+  async update(
+    userId: string,
+    visitId: string,
+    dto: UpdateDto,
+  ): Promise<Health> {
     const visit = await this.findOneByUserAndId(userId, visitId);
 
     if (dto.visitType) {
@@ -59,16 +68,21 @@ export class VisitService {
 
     Object.assign(visit, dto);
 
-    const updatedVisit = await this.visitRepository.save(visit);
+    await this.visitRepository.save(visit);
 
-    return updatedVisit;
+    return this.healthService.findOneByUserAndId(userId, visit.health.id);
   }
 
-  async remove(userId, visitId) {
-    const visit = await this.findOneByUserAndId(userId, visitId);
+  async remove(userId, visitId): Promise<Health> {
+    let visit = await this.findOneByUserAndId(userId, visitId);
 
-    await this.visitRepository.remove(visit);
+    visit = await this.visitRepository.remove(visit);
 
-    return true;
+    return this.healthService.findOneByUserAndId(
+      userId,
+      visit.health.id,
+      [],
+      ['pet'],
+    );
   }
 }

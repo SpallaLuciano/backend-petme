@@ -9,6 +9,13 @@ import {
   Visit,
   Pet,
   Health,
+  Chat,
+  Message,
+  UserValidation,
+  Vaccine,
+  Evidence,
+  OwnerRequest,
+  Vaccination,
 } from '../../entities';
 
 const { host, port, database, username, password, schema } = databaseEnvs;
@@ -21,7 +28,23 @@ export const options: TypeOrmModuleOptions = {
   username: username,
   password: password,
   schema: schema,
-  entities: [Profile, User, Image, Comment, Pet, VisitType, Visit, Health],
+  entities: [
+    Profile,
+    User,
+    Image,
+    Comment,
+    OwnerRequest,
+    Evidence,
+    Vaccination,
+    Vaccine,
+    Pet,
+    VisitType,
+    Visit,
+    Health,
+    Chat,
+    Message,
+    UserValidation,
+  ],
   logging: true,
   synchronize: true,
 };

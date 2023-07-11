@@ -7,19 +7,21 @@ export function IsBeforeYears(
   validationOptions?: ValidatorOptions,
 ) {
   return function (object: object, propertyName: string) {
-    let date = args.date ? args.date : new Date();
-
-    date = subYears(date, args.years || 0);
-
     registerDecorator({
       target: object.constructor,
       propertyName: propertyName,
       options: validationOptions,
       validator: {
         validate(value: Date) {
+          let date = args.date ? args.date : new Date();
+          date = subYears(date, args.years || 0);
+
           return isOlderThan(value, date);
         },
         defaultMessage: () => {
+          let date = args.date ? args.date : new Date();
+          date = subYears(date, args.years || 0);
+
           return `La fecha debe ser anterior a ${date
             .toISOString()
             .substring(0, 10)}`;

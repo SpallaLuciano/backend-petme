@@ -5,8 +5,8 @@ import { VisitType } from './visit-type';
 
 @Entity({ name: 'visits' })
 export class Visit extends BaseEntity {
-  @Column({ type: 'date' })
-  datetime: Date;
+  @Column({ type: 'timestamp' })
+  date: Date;
 
   @Column({ type: 'varchar', length: 255 })
   description: string;
@@ -17,9 +17,9 @@ export class Visit extends BaseEntity {
   @Column({ type: 'varchar', length: 255 })
   place: string;
 
-  @ManyToOne(() => Health)
+  @ManyToOne(() => Health, (health) => health.visits, { onDelete: 'CASCADE' })
   health: Health;
 
-  @ManyToOne(() => VisitType)
+  @ManyToOne(() => VisitType, { eager: true })
   type: VisitType;
 }

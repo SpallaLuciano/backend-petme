@@ -19,7 +19,7 @@ export class UserController {
   }
 
   @Post()
-  async create(@Body() dto: CreateDto): Promise<Response<User>> {
+  async create(@Body() dto: CreateDto): Promise<Response<boolean>> {
     const user = await this.userService.create(dto);
 
     return successResponse(user);

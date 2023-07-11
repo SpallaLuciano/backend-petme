@@ -18,9 +18,9 @@ export class UserService {
     try {
       const user = await this.userRepository.findOneBy(findBy);
 
-      const serialized = { ...user.profile };
-
-      user.profile = serialized as Profile;
+      if (user.profile) {
+        user.profile = { ...user.profile } as Profile;
+      }
 
       return user;
     } catch (error) {
@@ -28,44 +28,62 @@ export class UserService {
     }
   }
 
-  async create({ email, password }: CreateDto): Promise<User> {
+  async create({ email, password, profile }: CreateDto): Promise<boolean> {
+    let user: User;
+    const queryRunner =
+      this.userRepository.manager.connection.createQueryRunner();
+
     try {
-      const user = await this.userRepository.findOneBy({ email });
-
-      if (user) {
-        throw new WarningException('Email ya registrado');
-      }
-
-      const newUser = await this.userRepository.create({
-        email,
-        password,
-      });
-
-      await this.userRepository.save(newUser);
-
-      await this.userValidationService.sendVerificationMail(newUser);
-
-      return newUser;
+      user = await this.userRepository.findOneBy({ email });
     } catch (error) {
       throw new ErrorException('Hubo un problema al crear el usuario', error);
+    }
+
+    if (user) {
+      throw new WarningException('Email ya registrado');
+    }
+
+    try {
+      await queryRunner.startTransaction();
+
+      user = await queryRunner.manager.create(User, {
+        email,
+        password,
+        profile,
+      });
+
+      user = await queryRunner.manager.save(user);
+
+      await this.userValidationService.sendVerificationMail(user, queryRunner);
+
+      await queryRunner.commitTransaction();
+
+      return true;
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw new ErrorException('Hubo un problema al crear el usuario', error);
+    } finally {
+      await queryRunner.release();
     }
   }
 
   async update(dto: UpdateDto): Promise<User> {
     try {
-      const user = await this.userRepository.findOneBy({ email: dto.email });
+      let user = await this.userRepository.findOneBy({ email: dto.email });
 
       if (!user) {
         throw new WarningException('Usuario no registrado');
       }
 
-      const updatedUser = Object.assign(user, dto);
+      user = Object.assign(user, dto);
 
-      await this.userRepository.save(updatedUser);
+      user = await this.userRepository.save(user);
 
-      return updatedUser;
+      return user;
     } catch (error) {
-      console.log(error);
+      if (error instanceof WarningException) {
+        throw error;
+      }
 
       throw new ErrorException(
         'Hubo un problema al actualizar el usuario',
@@ -75,9 +93,7 @@ export class UserService {
   }
 
   async validateUser(user: User): Promise<User> {
-    user.validated = true;
-
-    return await this.userRepository.save(user);
+    return await this.userRepository.save({ id: user.id, validated: true });
   }
 
   async updatePassword(user: User, password: string) {

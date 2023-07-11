@@ -3,15 +3,20 @@ import { Repository } from 'typeorm';
 import { WarningException } from '../../common';
 import { Vaccine } from '../../entities/vaccine';
 import { CreateDto, UpdateDto } from './dtos';
+import { VisitTypeService } from '../visit-type/visit-type.service';
 
 export class VaccineService {
   constructor(
     @InjectRepository(Vaccine)
     private vaccineRepository: Repository<Vaccine>,
+    private visitTypeService: VisitTypeService,
   ) {}
 
-  find() {
-    return this.vaccineRepository.find();
+  async find() {
+    const vaccines = await this.vaccineRepository.find();
+    const visitTypes = await this.visitTypeService.findVisitTypes();
+
+    return { vaccines, visitTypes };
   }
 
   async findOneById(id: string) {
@@ -43,10 +48,10 @@ export class VaccineService {
   }
 
   async remove(id: string) {
-    const vaccine = await this.findOneById(id);
+    let vaccine = await this.findOneById(id);
 
-    await this.vaccineRepository.remove(vaccine);
+    vaccine = await this.vaccineRepository.remove(vaccine);
 
-    return true;
+    return vaccine;
   }
 }

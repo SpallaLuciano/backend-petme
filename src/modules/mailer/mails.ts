@@ -9,13 +9,13 @@ export function getVerificationMail(token: string) {
   Te damos la bienvenida a PetMe.<br>
   Solo falta un paso más.<br>
   <br>
-  Para completar tu registro de usuario ingresa al <a href="::link">link</a> o ingresa la siguiente url en el navegador:<br>
+  Para completar tu registro de usuario ingresa al <a href="::link">link</a> o ingresa la siguiente url en tu navegador:<br>
   ::link<br>
   <br>
   En caso de no haber creado el usuario desestima este mail.
   </text>`;
 
-  return message.replace('::link', link);
+  return message.replace(/::link/g, link);
 }
 
 function getVerificationLink(token: string) {
@@ -29,13 +29,13 @@ export function getRecoverMail(token: string) {
   Hola<br>
   Solicitaste el cambio de contraseña.<br>
   <br>
-  Para realizarlo ingresa en el <a href="::link">link</a> o ingresa la siguiente url en el navegador:<br>
+  Para realizarlo ingresa en el <a href="::link">link</a> o ingresa la siguiente url en tu navegador:<br>
   ::link<br>
   <br>
   En caso de no haber solicitado el cambio de contraseña desestima este mail.
   </text>`;
 
-  return message.replace('::link', link);
+  return message.replace(/::link/g, link);
 }
 
 function getRecoverLink(token: string) {

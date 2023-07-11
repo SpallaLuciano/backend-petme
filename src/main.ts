@@ -9,7 +9,7 @@ import { AppModule } from './modules/app.module';
 config();
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, { cors: true });
 
   app.useWebSocketAdapter(new IoAdapter(app));
 

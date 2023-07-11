@@ -1,3 +1,4 @@
+import { PartialType } from '@nestjs/swagger';
 import { IsHexColor, IsNotEmpty, IsString } from 'class-validator';
 
 export class CreateDto {
@@ -12,3 +13,5 @@ export class CreateDto {
   @IsHexColor()
   color: string;
 }
+
+export class UpdateDto extends PartialType(CreateDto) {}

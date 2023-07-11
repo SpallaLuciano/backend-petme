@@ -25,7 +25,9 @@
     "typeorm:migrate": "npm run typeorm migration:run -- -d ./orm-migration-options.ts",
     "typeorm:generate": "npm run typeorm -- -d ./orm-migration-options.ts migration:generate ./migrations/migrations/$npm_config_name",
     "typeorm:create": "npm run typeorm -- migration:create ./migrations/migrations/$npm_config_name",
-    "typeorm:revert": "npm run typeorm -- -d ./orm-migration-options.ts migration:revert"
+    "typeorm:revert": "npm run typeorm -- -d ./orm-migration-options.ts migration:revert",
+    "typeorm:schema-drop": "npm run typeorm -- -d ./orm-migration-options.ts schema:drop",
+    "typeorm:schema-sync": "npm run typeorm -- -d ./orm-migration-options.ts schema:sync"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.312.0",

@@ -2,11 +2,13 @@ import { ApiProperty, PartialType } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 import { IsNotEmpty, IsString } from 'class-validator';
 import { parseISO } from 'date-fns';
+import { IsBeforeYears } from '../../../common';
 
 export class CreateDto {
   @ApiProperty({ type: Date })
   @Transform(({ value }) => parseISO(value))
-  datetime: string;
+  @IsBeforeYears({ years: 0 })
+  date: Date;
 
   @IsString()
   @IsNotEmpty()

@@ -7,7 +7,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { bucketEnvs, ErrorException } from '../../common';
-import { Image } from '../../entities';
+import { Image, Profile } from '../../entities';
 import { v4 as uuidV4 } from 'uuid';
 
 const { region, accessKeyId, secretAccessKey, bucketName, endpoint } =
@@ -33,7 +33,8 @@ export class FileService {
     description: string,
     file: Express.Multer.File,
   ): Promise<Image> {
-    const { queryRunner } = this.imageRepository;
+    const queryRunner =
+      this.imageRepository.manager.connection.createQueryRunner();
     const key = this.getKey(file);
 
     await queryRunner.startTransaction();
@@ -56,16 +57,25 @@ export class FileService {
     }
   }
 
-  async removeImage(id: string): Promise<boolean> {
+  async removeImage(id: string, from?: string): Promise<boolean> {
     const image = await this.imageRepository.findOneBy({ id });
     const key = image.url.split('/').pop();
 
-    const { queryRunner } = this.imageRepository;
+    const queryRunner =
+      this.imageRepository.manager.connection.createQueryRunner();
 
     await queryRunner.startTransaction();
 
     try {
-      await this.imageRepository.remove(image);
+      if (from === 'profile') {
+        await queryRunner.manager.update(
+          Profile,
+          { image: { id } },
+          { image: null },
+        );
+      }
+
+      await queryRunner.manager.remove(image);
 
       await this.removeFile(key);
 

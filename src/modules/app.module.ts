@@ -13,6 +13,7 @@ import { ChatModule } from './chat/chat.module';
 import { VaccineModule } from './vaccine/vaccine.module';
 import { PetModule } from './pet/pet.module';
 import { UserValidationModule } from './user-validation/user-validation.module';
+import { VaccinationModule } from './vaccination/vaccination.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { UserValidationModule } from './user-validation/user-validation.module';
     VaccineModule,
     VisitModule,
     VisitTypeModule,
+    VaccinationModule,
   ],
   controllers: [],
   providers: [],

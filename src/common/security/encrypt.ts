@@ -4,6 +4,9 @@ import { encryptEnvs } from '../enviroment';
 const { algorithm, secretKey, secretIv } = encryptEnvs;
 
 export function encrypt<T>(value: T): string {
+  if (!value) {
+    return null;
+  }
   const iv = createHash('sha512')
     .update(secretIv)
     .digest('hex')
@@ -20,7 +23,9 @@ export function encrypt<T>(value: T): string {
 }
 
 export function decrypt<T>(value: string): T {
-  if (!value) return null;
+  if (!value) {
+    return null;
+  }
   const [encrypted, iv] = value.split('::');
   const buffer = Buffer.from(encrypted, 'base64');
   const decipher = createDecipheriv(algorithm, secretKey, iv);
