@@ -12,8 +12,16 @@ export class MessageService {
   ) {}
 
   async create(dto: CreateMessageDto) {
-    const message = this.messageRepository.create(dto);
+    let message = this.messageRepository.create(dto);
 
-    return await this.messageRepository.save(message);
+    message = await this.messageRepository.save(message);
+
+    return await this.messageRepository.findOne({
+      where: { id: message.id },
+      relations: { chat: { messages: true } },
+      loadRelationIds: {
+        relations: ['sender', 'receiver'],
+      },
+    });
   }
 }

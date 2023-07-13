@@ -51,14 +51,19 @@ export class UserValidationService {
   }
 
   async sendRecoverPasswordMail(email: string): Promise<void> {
-    const validation = await this.userValidationRepository.findOneBy({
-      user: {
-        email,
+    const validation = await this.userValidationRepository.findOne({
+      where: {
+        user: {
+          email,
+        },
+      },
+      loadRelationIds: {
+        relations: ['user'],
       },
     });
 
     if (validation) {
-      const recoverPasswordToken = uuidV5('recover', validation.user.id);
+      const recoverPasswordToken = uuidV5('recover', String(validation.user));
       const recoverPasswordDate = new Date();
 
       Object.assign(validation, {

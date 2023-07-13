@@ -31,8 +31,6 @@ export class ChatService {
       .createQueryBuilder('chats')
       .leftJoinAndSelect('chats.users', 'profile')
       .where('profile.id IN (:...ids)', { ids: profilesToInclude })
-      .groupBy('chat.id')
-      .having(`COUNT(DISTINCT user.id) = ${2}`)
       .getOne();
 
     return chat;
@@ -41,9 +39,11 @@ export class ChatService {
   async findAllChatsByUser(userId: string) {
     const chats = await this.chatRepository
       .createQueryBuilder('chats')
-      .leftJoinAndSelect('chats.users', 'profile')
       .leftJoinAndSelect('chats.messages', 'messages')
-      .where('profile.userId = :userId', { userId })
+      .innerJoin('chats.users', 'users', 'users.userId = :userId', { userId })
+      .loadRelationIdAndMap('chats.users', 'chats.users')
+      .loadRelationIdAndMap('messages.sender', 'messages.sender')
+      .loadRelationIdAndMap('messages.receiver', 'messages.receiver')
       .getMany();
 
     return chats;

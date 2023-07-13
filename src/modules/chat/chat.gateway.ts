@@ -13,7 +13,14 @@ import { ChatService } from './chat.service';
 import { MessageDto } from './dtos';
 import { MessageService } from './message.service';
 
-@WebSocketGateway()
+@WebSocketGateway({
+  cors: {
+    origin: 'http://localhost:3000',
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true,
+  },
+})
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer() server: Server;
 
@@ -26,9 +33,11 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   ) {}
 
   @WsAuth()
-  handleConnection(@ConnectedSocket() client: Socket) {
-    const id = client.handshake['user'].id;
-    this.connectedClients.set(id, client);
+  async handleConnection(@ConnectedSocket() client: Socket) {
+    const userId = client.handshake['user'].id;
+    const profile = await this.profileService.findByUser(userId);
+
+    this.connectedClients.set(profile.id, client);
   }
 
   @WsAuth()
@@ -37,7 +46,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     this.connectedClients.delete(id);
   }
 
-  @WsAuth()
   @SubscribeMessage('new-message')
   async handleSendToUser(client: Socket, dto: MessageDto) {
     const userId = client.handshake['user'].id;

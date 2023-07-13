@@ -1,4 +1,4 @@
-import { Entity, ManyToOne } from 'typeorm';
+import { Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { EncryptedColumn } from '../common';
 import { BaseEntity } from './base-entity';
 import { Chat } from './chat';
@@ -10,9 +10,11 @@ export class Message extends BaseEntity {
   chat: Chat;
 
   @ManyToOne(() => Profile)
+  @JoinColumn()
   sender: Profile;
 
   @ManyToOne(() => Profile)
+  @JoinColumn()
   receiver: Profile;
 
   @EncryptedColumn({ type: 'varchar', length: 255 })

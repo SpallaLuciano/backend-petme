@@ -12,14 +12,15 @@ export function WebSocketJwt(): MethodDecorator {
     const originalMethod = descriptor.value;
     descriptor.value = function (...args: any[]) {
       const client: Socket = args[0];
-      const authHeader = client.handshake.headers['authorization'];
-      const token = authHeader?.split(' ')[1];
+      const token = client.handshake.auth.token;
+
       if (!token) {
         throw new UnauthorizedException();
       }
+
       const decoded = verify(token, jwtEnvs.secret) as JwtPayload;
 
-      client.handshake['user'] = { ...client.handshake['user'], decoded };
+      client.handshake['user'] = { ...client.handshake['user'], ...decoded };
       return originalMethod.apply(this, args);
     };
 
