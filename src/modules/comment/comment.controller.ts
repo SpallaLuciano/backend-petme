@@ -1,4 +1,5 @@
 import {
+  Body,
   Controller,
   Delete,
   Get,
@@ -14,7 +15,7 @@ import { CommentService } from './comment.service';
 import { CreateDto, UpdateDto } from './dtos';
 
 @ApiTags('Comentarios')
-@Controller('coments')
+@Controller('comments')
 export class CommentController {
   constructor(private commentService: CommentService) {}
 
@@ -27,7 +28,7 @@ export class CommentController {
 
   @Auth()
   @Post()
-  async create(@Request() req, dto: CreateDto): Promise<Response<Comment>> {
+  async create(@Request() req, @Body() dto: CreateDto) {
     const comment = await this.commentService.createComment(req.user.id, dto);
 
     return successResponse(comment);
@@ -51,10 +52,7 @@ export class CommentController {
 
   @Auth()
   @Delete(':id')
-  async remove(
-    @Request() req,
-    @Param('id') id: string,
-  ): Promise<Response<Comment>> {
+  async remove(@Request() req, @Param('id') id: string) {
     const comment = await this.commentService.deleteComment(id, req.user.id);
 
     return successResponse(comment);

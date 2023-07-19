@@ -17,9 +17,18 @@ export class ProfileService {
   ) {}
 
   async findByUser(userId: string) {
-    const profile = await this.profileRepository.findOneBy({
-      user: { id: userId },
-    });
+    const profile = await this.profileRepository
+      .createQueryBuilder('profile')
+      .innerJoin('profile.user', 'user', 'user.id = :userId', { userId })
+      .leftJoinAndSelect('profile.comments', 'comments')
+      .leftJoinAndSelect('profile.ownComments', 'ownComments')
+      .leftJoinAndSelect('profile.image', 'image')
+      .loadRelationIdAndMap('profile.favs', 'profile.favs')
+      .loadRelationIdAndMap('comments.recipient', 'comments.recipient')
+      .loadRelationIdAndMap('comments.author', 'comments.author')
+      .loadRelationIdAndMap('ownComments.recipient', 'ownComments.recipient')
+      .loadRelationIdAndMap('ownComments.author', 'ownComments.author')
+      .getOne();
 
     if (!profile) {
       throw new WarningException('No se encontró el perfil');
@@ -29,7 +38,17 @@ export class ProfileService {
   }
 
   async find(): Promise<Profile[]> {
-    const profiles = await this.profileRepository.find();
+    const profiles = await this.profileRepository
+      .createQueryBuilder('profile')
+      .leftJoinAndSelect('profile.comments', 'comments')
+      .leftJoinAndSelect('profile.ownComments', 'ownComments')
+      .leftJoinAndSelect('profile.image', 'image')
+      .loadRelationIdAndMap('profile.favs', 'profile.favs')
+      .loadRelationIdAndMap('comments.recipient', 'comments.recipient')
+      .loadRelationIdAndMap('comments.author', 'comments.author')
+      .loadRelationIdAndMap('ownComments.recipient', 'ownComments.recipient')
+      .loadRelationIdAndMap('ownComments.author', 'ownComments.author')
+      .getMany();
 
     return profiles;
   }
@@ -102,25 +121,46 @@ export class ProfileService {
     return profile;
   }
 
-  async petLike(profile: Profile, petId: string): Promise<boolean> {
-    const isId = profile.favs.some((id) => id === petId);
-    let liked;
+  async petLike(userId: string, petId: string): Promise<Profile> {
+    const profile = await this.profileRepository
+      .createQueryBuilder('profile')
+      .loadRelationIdAndMap('profile.favs', 'profile.favs')
+      .where('profile.userId = :userId', { userId })
+      .getOne();
+    const profileHasLike = (profile.favs as unknown as string[]).some(
+      (id) => petId === id,
+    );
 
-    if (isId) {
-      profile.favs = profile.favs.filter((id) => id !== petId);
-      liked = false;
+    if (profileHasLike) {
+      await this.profileRepository
+        .createQueryBuilder('profile')
+        .relation('favs')
+        .of(profile.id)
+        .remove(petId);
     } else {
-      profile.favs.push(petId);
-      liked = true;
+      await this.profileRepository
+        .createQueryBuilder('profile')
+        .relation('favs')
+        .of(profile.id)
+        .add(petId);
     }
 
-    await this.profileRepository.save(profile);
-
-    return liked;
+    return await this.findById(profile.id);
   }
 
   async findById(id: string) {
-    const profile = this.profileRepository.findOneBy({ id });
+    const profile = await this.profileRepository
+      .createQueryBuilder('profile')
+      .leftJoinAndSelect('profile.comments', 'comments')
+      .leftJoinAndSelect('profile.ownComments', 'ownComments')
+      .leftJoinAndSelect('profile.image', 'image')
+      .loadRelationIdAndMap('profile.favs', 'profile.favs')
+      .loadRelationIdAndMap('comments.recipient', 'comments.recipient')
+      .loadRelationIdAndMap('comments.author', 'comments.author')
+      .loadRelationIdAndMap('ownComments.recipient', 'ownComments.recipient')
+      .loadRelationIdAndMap('ownComments.author', 'ownComments.author')
+      .where('profile.id = :id', { id })
+      .getOne();
 
     if (!profile) {
       throw new WarningException('No se encontró el perfil');

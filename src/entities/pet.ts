@@ -71,10 +71,13 @@ export class Pet extends BaseEntity {
   })
   health: Health;
 
-  @ManyToMany(() => Image, { eager: true, cascade: true })
+  @ManyToMany(() => Image)
   @JoinTable()
   images: Image[];
 
   @OneToMany(() => OwnerRequest, (ownerRequest) => ownerRequest.pet)
   ownerRequests: OwnerRequest[];
+
+  @ManyToMany(() => Profile)
+  favsFrom: Profile[];
 }

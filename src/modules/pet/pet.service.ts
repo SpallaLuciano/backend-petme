@@ -27,7 +27,7 @@ export class PetService {
       },
     });
 
-    pet = await this.petRepository.save(pet);
+    await this.petRepository.save(pet);
 
     pet = await this.findById(pet.id);
 
@@ -45,7 +45,15 @@ export class PetService {
   }
 
   async find(): Promise<Pet[]> {
-    const pets = await this.petRepository.find();
+    const pets = await this.petRepository.find({
+      relations: {
+        health: true,
+        images: true,
+      },
+      loadRelationIds: {
+        relations: ['owner'],
+      },
+    });
 
     return pets;
   }
@@ -97,20 +105,9 @@ export class PetService {
   }
 
   async like(userId: string, petId: string) {
-    const profile = await this.profileService.findByUser(userId);
+    const profile = await this.profileService.petLike(userId, petId);
 
-    const pet = await this.petRepository.findOneBy({ id: petId });
-
-    if (!pet) {
-      throw new WarningException('No se encontró la mascota');
-    }
-
-    const like = await this.profileService.petLike(profile, pet.id);
-
-    return {
-      petId,
-      like,
-    };
+    return profile;
   }
 
   private async findByUserAndId(userId: string, petId: string): Promise<Pet> {

@@ -1,10 +1,18 @@
 import { Exclude } from 'class-transformer';
-import { Column, Entity, JoinColumn, OneToMany, OneToOne } from 'typeorm';
+import {
+  Entity,
+  JoinColumn,
+  JoinTable,
+  ManyToMany,
+  OneToMany,
+  OneToOne,
+} from 'typeorm';
 import { EncryptedColumn } from '../common';
 import { BaseEntity } from './base-entity';
 import { Comment } from './comment';
 import { Image } from './image';
 import { User } from './user';
+import { Pet } from './pet';
 
 @Entity({ name: 'profiles' })
 export class Profile extends BaseEntity {
@@ -14,9 +22,19 @@ export class Profile extends BaseEntity {
   @EncryptedColumn({ type: 'varchar', length: 255 })
   lastname: string;
 
-  @Exclude()
-  @Column({ type: 'varchar', array: true, default: [] })
-  favs: string[];
+  @ManyToMany(() => Pet)
+  @JoinTable({
+    name: 'profiles_fav_pets',
+    joinColumn: {
+      name: 'id',
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'id',
+      referencedColumnName: 'id',
+    },
+  })
+  favs: Pet[];
 
   @Exclude()
   @EncryptedColumn<Date>({ type: 'varchar', length: 255 })
@@ -38,9 +56,9 @@ export class Profile extends BaseEntity {
   @JoinColumn({ name: 'imageId', referencedColumnName: 'id' })
   image?: Image;
 
-  @OneToMany(() => Comment, (comment) => comment.recipient)
+  @OneToMany(() => Comment, (comment) => comment.recipient, { eager: true })
   comments: Comment[];
 
-  @OneToMany(() => Comment, (comment) => comment.author)
+  @OneToMany(() => Comment, (comment) => comment.author, { eager: true })
   ownComments: Comment[];
 }

@@ -14,23 +14,32 @@ export class CommentService {
     private profileService: ProfileService,
   ) {}
 
-  async createComment(userId: string, dto: CreateDto): Promise<Comment> {
+  async createComment(userId: string, dto: CreateDto) {
     const author = await this.profileService.findByUser(userId);
-    const recipient = await this.profileService.findByUser(dto.recipientId);
+
+    if (author.id === dto.profileId) {
+      throw new WarningException('No se pueden cargar comentarios de si mismo');
+    }
 
     const comment = this.commentRepository.create({
       ...dto,
       author,
-      recipient,
+      recipient: { id: dto.profileId },
     });
 
     await this.commentRepository.save(comment);
 
-    return comment;
+    const recipient = await this.profileService.findById(dto.profileId);
+    const authorUpdated = await this.profileService.findByUser(userId);
+
+    return { recipient, author: authorUpdated };
   }
 
-  async findOneById(commentId: string): Promise<Comment> {
-    const comment = await this.commentRepository.findOneBy({ id: commentId });
+  async findOneById(commentId: string, relations?: string[]): Promise<Comment> {
+    const comment = await this.commentRepository.findOne({
+      where: { id: commentId },
+      relations,
+    });
 
     if (!comment) {
       throw new WarningException(
@@ -59,14 +68,35 @@ export class CommentService {
     return updatedComment;
   }
 
-  async deleteComment(commentId: string, userId: string): Promise<Comment> {
-    let comment = await this.findOneById(commentId);
+  async deleteComment(commentId: string, userId: string) {
+    const comment = await this.findOneByIdAndUser(commentId, userId);
 
-    if (comment.author.id !== userId) {
-      throw new WarningException('No tiene permisos para borrar el comentario');
+    await this.commentRepository.remove(comment);
+
+    const recipient = this.profileService.findById(
+      comment.recipient as unknown as string,
+    );
+    const author = this.profileService.findById(
+      comment.author as unknown as string,
+    );
+
+    return { recipient: await recipient, author: await author };
+  }
+
+  async findOneByIdAndUser(commentId: string, userId: string) {
+    const comment = await this.commentRepository
+      .createQueryBuilder('comment')
+      .innerJoin('comment.author', 'author', 'author.userId = :userId', {
+        userId,
+      })
+      .loadRelationIdAndMap('comment.author', 'comment.author')
+      .loadRelationIdAndMap('comment.recipient', 'comment.recipient')
+      .where('comment.id = :commentId', { commentId })
+      .getOne();
+
+    if (!comment) {
+      throw new WarningException('No se encontro el comentario');
     }
-
-    comment = await this.commentRepository.remove(comment);
 
     return comment;
   }
