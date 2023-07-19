@@ -37,6 +37,10 @@ interface MailerEnvs {
   frontHost: string;
   verificationEndpoint: string;
   recoverEndpoint: string;
+  user: string;
+  pass: string;
+  host: string;
+  port: number;
 }
 
 config();
