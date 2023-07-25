@@ -42,7 +42,7 @@ export class FileService {
 
     try {
       const image = this.imageRepository.create({
-        url: `${endpoint}/${bucketName}/${key}`,
+        url: `${endpoint}/${key}`,
         description,
       });
 
@@ -78,7 +78,7 @@ export class FileService {
 
       await queryRunner.manager.remove(image);
 
-      await this.removeFile(key);
+      await this.removeFile(`images/${key}`);
 
       await queryRunner.commitTransaction();
 
@@ -132,6 +132,6 @@ export class FileService {
     const fileName = file.originalname.split('.');
     const fileEnd = fileName.pop();
 
-    return `${uuidV4()}.${fileEnd}`;
+    return `images/${uuidV4()}.${fileEnd}`;
   }
 }

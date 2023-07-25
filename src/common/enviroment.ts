@@ -29,7 +29,6 @@ interface BucketEnvs {
   region: string;
   accessKeyId: string;
   secretAccessKey: string;
-  bucketName: string;
   endpoint: string;
 }
 
@@ -45,13 +44,13 @@ interface MailerEnvs {
 
 config();
 
-export const databaseEnvs = parseableEnviroment<DatabaseEnvs>('DATABASE');
-export const encryptEnvs = parseableEnviroment<EncryptEnvs>('ENCRYPT');
 export const jwtEnvs = parseableEnviroment<JwtEnvs>('JWT');
 export const hashEnvs = parseableEnviroment<HashEnvs>('HASH');
+export const frontHost = parseableEnviroment<string>('FRONT_HOST');
+export const databaseEnvs = parseableEnviroment<DatabaseEnvs>('DATABASE');
+export const encryptEnvs = parseableEnviroment<EncryptEnvs>('ENCRYPT');
 export const bucketEnvs = parseableEnviroment<BucketEnvs>('BUCKET');
 export const mailerEnvs = parseableEnviroment<MailerEnvs>('MAILER');
-export const frontHost = parseableEnviroment<string>('FRONT_HOST');
 
 function parseableEnviroment<T>(name: string): T {
   const env = process.env[name];
