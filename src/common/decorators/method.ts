@@ -3,6 +3,8 @@ import { Socket } from 'socket.io';
 import { verify, JwtPayload } from 'jsonwebtoken';
 import { jwtEnvs } from '../enviroment';
 
+const { secret } = jwtEnvs();
+
 export function WebSocketJwt(): MethodDecorator {
   return function (
     target: any,
@@ -18,7 +20,7 @@ export function WebSocketJwt(): MethodDecorator {
         throw new UnauthorizedException();
       }
 
-      const decoded = verify(token, jwtEnvs().secret) as JwtPayload;
+      const decoded = verify(token, secret) as JwtPayload;
 
       client.handshake['user'] = { ...client.handshake['user'], ...decoded };
       return originalMethod.apply(this, args);
