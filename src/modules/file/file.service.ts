@@ -12,7 +12,7 @@ import { v4 as uuidV4 } from 'uuid';
 import sharp from 'sharp';
 
 const { region, accessKeyId, secretAccessKey, bucketName, endpoint } =
-  bucketEnvs;
+  bucketEnvs();
 
 @Injectable()
 export class FileService {

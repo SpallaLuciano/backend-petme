@@ -1,7 +1,7 @@
 import { differenceInYears, addDays } from 'date-fns';
 import { jwtEnvs } from './enviroment';
 
-const { expiresIn } = jwtEnvs;
+const { expiresIn } = jwtEnvs();
 
 export function isOlderThan(
   aDate: Date,

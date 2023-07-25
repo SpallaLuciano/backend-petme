@@ -18,7 +18,7 @@ import {
   Vaccination,
 } from '../../entities';
 
-const { host, port, database, username, password, schema } = databaseEnvs;
+const { host, port, database, username, password, schema } = databaseEnvs();
 
 export const options: TypeOrmModuleOptions = {
   type: 'postgres',

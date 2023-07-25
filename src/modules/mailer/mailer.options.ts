@@ -4,7 +4,7 @@ import { mailerEnvs } from '../../common';
 
 const caCert = readFileSync('src/common/certificates/outlook-root-ca.crt');
 
-const { host, pass, user, port } = mailerEnvs;
+const { host, pass, user, port } = mailerEnvs();
 
 export const options: MailerOptions = {
   transport: {

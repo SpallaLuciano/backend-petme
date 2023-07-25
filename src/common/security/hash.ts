@@ -1,7 +1,7 @@
 import { genSalt, hash as hashBcrypt, compare } from 'bcrypt';
 import { hashEnvs } from '../enviroment';
 
-const { saltRounds } = hashEnvs;
+const { saltRounds } = hashEnvs();
 
 export async function hash(value: string) {
   const salt = await genSalt(saltRounds);

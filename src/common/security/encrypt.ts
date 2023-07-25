@@ -1,7 +1,7 @@
 import { createCipheriv, createDecipheriv, createHash } from 'crypto';
 import { encryptEnvs } from '../enviroment';
 
-const { algorithm, secretKey, secretIv } = encryptEnvs;
+const { algorithm, secretKey, secretIv } = encryptEnvs();
 
 export function encrypt<T>(value: T): string {
   if (!value) {

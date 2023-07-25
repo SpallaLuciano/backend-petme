@@ -45,13 +45,13 @@ interface MailerEnvs {
 
 config();
 
-export const jwtEnvs = parseableEnviroment<JwtEnvs>('JWT');
-export const hashEnvs = parseableEnviroment<HashEnvs>('HASH');
-export const databaseEnvs = parseableEnviroment<DatabaseEnvs>('DATABASE');
+export const jwtEnvs = () => parseableEnviroment<JwtEnvs>('JWT');
+export const hashEnvs = () => parseableEnviroment<HashEnvs>('HASH');
+export const databaseEnvs = () => parseableEnviroment<DatabaseEnvs>('DATABASE');
 export const frontHost = String(process.env.FRONT_HOST);
-export const encryptEnvs = parseableEnviroment<EncryptEnvs>('ENCRYPT');
-export const bucketEnvs = parseableEnviroment<BucketEnvs>('BUCKET');
-export const mailerEnvs = parseableEnviroment<MailerEnvs>('MAILER');
+export const encryptEnvs = () => parseableEnviroment<EncryptEnvs>('ENCRYPT');
+export const bucketEnvs = () => parseableEnviroment<BucketEnvs>('BUCKET');
+export const mailerEnvs = () => parseableEnviroment<MailerEnvs>('MAILER');
 
 function parseableEnviroment<T>(name: string): T {
   const env = process.env[name];
