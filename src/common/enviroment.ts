@@ -63,7 +63,7 @@ function parseableEnviroment<T>(name: string): T {
   try {
     return JSON.parse(env) as T;
   } catch (error) {
-    console.error(error);
+    console.error(error, env);
     throw new InternalServerErrorException(`${name} env has a bad format`);
   }
 }
