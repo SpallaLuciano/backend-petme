@@ -55,6 +55,7 @@ export const mailerEnvs = parseableEnviroment<MailerEnvs>('MAILER');
 
 function parseableEnviroment<T>(name: string): T {
   const env = process.env[name];
+  console.debug(env);
 
   if (!env) {
     throw new InternalServerErrorException(`No ${name} env configured`);
