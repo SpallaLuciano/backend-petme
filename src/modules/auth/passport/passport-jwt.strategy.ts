@@ -12,6 +12,7 @@ interface UserPayload {
 
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor() {
+    console.log(secret);
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
