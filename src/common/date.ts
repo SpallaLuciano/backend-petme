@@ -1,7 +1,4 @@
 import { differenceInYears, addDays } from 'date-fns';
-import { jwtEnvs } from './enviroment';
-
-const { expiresIn } = jwtEnvs();
 
 export function isOlderThan(
   aDate: Date,
@@ -15,7 +12,7 @@ export function isOlderThan(
 
 export function getExpirationDate() {
   const date = new Date();
-  const days = expiresIn.split('d')[0];
+  const days = process.env.JWT_EXPIRES_IN.split('d')[0];
 
   return addDays(date, Number(days));
 }

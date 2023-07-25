@@ -6,13 +6,10 @@ import {
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { bucketEnvs, ErrorException } from '../../common';
+import { ErrorException } from '../../common';
 import { Image, Profile } from '../../entities';
 import { v4 as uuidV4 } from 'uuid';
 import sharp from 'sharp';
-
-const { region, accessKeyId, secretAccessKey, bucketName, endpoint } =
-  bucketEnvs();
 
 @Injectable()
 export class FileService {
@@ -23,9 +20,12 @@ export class FileService {
     private imageRepository: Repository<Image>,
   ) {
     this.s3Client = new S3Client({
-      region,
-      credentials: { accessKeyId, secretAccessKey },
-      endpoint,
+      region: process.env.BUCKET_REGION,
+      credentials: {
+        accessKeyId: process.env.BUCKET_ACCESS_KEY,
+        secretAccessKey: process.env.BUCKET_SECRET_ACCESS_KEY,
+      },
+      endpoint: process.env.BUCKET_ENDPOINT,
       forcePathStyle: true,
     });
   }
@@ -42,7 +42,7 @@ export class FileService {
 
     try {
       const image = this.imageRepository.create({
-        url: `${endpoint}/${key}`,
+        url: `${process.env.BUCKET_ENDPOINT}/${key}`,
         description,
       });
 
@@ -93,7 +93,7 @@ export class FileService {
     const { contentType, fileStream } = await this.getFileMetadata(file);
 
     const command = new PutObjectCommand({
-      Bucket: bucketName,
+      Bucket: process.env.BUCKET_NAME,
       Key: key,
       Body: fileStream,
       ContentType: contentType,
@@ -106,7 +106,7 @@ export class FileService {
 
   private async removeFile(key: string) {
     const command = new DeleteObjectCommand({
-      Bucket: bucketName,
+      Bucket: process.env.BUCKET_NAME,
       Key: key,
     });
 

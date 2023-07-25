@@ -1,11 +1,8 @@
 import { JwtModuleOptions } from '@nestjs/jwt';
-import { jwtEnvs } from '../../../common';
-
-const { secret, expiresIn } = jwtEnvs();
 
 export const options: JwtModuleOptions = {
-  secret: secret,
+  secret: process.env.JWT_SECRET,
   signOptions: {
-    expiresIn,
+    expiresIn: process.env.JWT_EXPIRES_IN,
   },
 };

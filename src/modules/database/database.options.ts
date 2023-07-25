@@ -1,5 +1,4 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
-import { databaseEnvs } from '../../common';
 import {
   Profile,
   User,
@@ -18,13 +17,10 @@ import {
   Vaccination,
 } from '../../entities';
 
-const { url, schema } = databaseEnvs();
-console.log('DB URL', url);
-
 export const options: TypeOrmModuleOptions = {
-  url,
+  url: process.env.DB_URL,
   type: 'postgres',
-  schema,
+  schema: process.env.DB_SCHEMA,
   entities: [
     Pet,
     Profile,

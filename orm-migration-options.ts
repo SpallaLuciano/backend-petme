@@ -20,12 +20,10 @@ import {
 
 config();
 
-const db = JSON.parse(process.env.DATABASE);
-
 export const options: DataSourceOptions = {
   type: 'postgres',
-  url: db.url,
-  schema: db.schema,
+  url: process.env.DB_URL,
+  schema: process.env.DB_SCHEMA,
   entities: [
     Profile,
     User,

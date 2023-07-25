@@ -1,7 +1,3 @@
-import { mailerEnvs, frontHost } from '../../common';
-
-const { recoverEndpoint, verificationEndpoint } = mailerEnvs();
-
 export function getVerificationMail(token: string) {
   const link = getVerificationLink(token);
 
@@ -19,7 +15,7 @@ export function getVerificationMail(token: string) {
 }
 
 function getVerificationLink(token: string) {
-  return `${frontHost}/${verificationEndpoint}/${token}`;
+  return `${process.env.FRONT_HOST}/${process.env.MAILER_VERIFICATION}/${token}`;
 }
 
 export function getRecoverMail(token: string) {
@@ -39,7 +35,7 @@ export function getRecoverMail(token: string) {
 }
 
 function getRecoverLink(token: string) {
-  return `${frontHost}/${recoverEndpoint}/${token}`;
+  return `${process.env.FRONT_HOST}/${process.env.MAILER_RECOVER}/${token}`;
 }
 
 export const updatedPasswordMail = `<text>

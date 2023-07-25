@@ -1,8 +1,5 @@
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { jwtEnvs } from '../../../common';
-
-const { secret } = jwtEnvs();
 
 interface UserPayload {
   id: string;
@@ -12,11 +9,11 @@ interface UserPayload {
 
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor() {
-    console.log(secret);
+    console.log(process.env.JWT_SECRET);
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      secretOrKey: secret || 'default_secret',
+      secretOrKey: process.env.JWT_SECRET,
     });
   }
 
