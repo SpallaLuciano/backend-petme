@@ -24,11 +24,7 @@ const db = JSON.parse(process.env.DATABASE);
 
 export const options: DataSourceOptions = {
   type: 'postgres',
-  host: db.host,
-  port: Number(db.port),
-  database: db.database,
-  username: db.username,
-  password: db.password,
+  url: db.url,
   schema: db.schema,
   entities: [
     Profile,
