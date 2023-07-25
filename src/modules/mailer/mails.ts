@@ -1,6 +1,6 @@
-import { mailerEnvs } from '../../common';
+import { mailerEnvs, frontHost } from '../../common';
 
-const { frontHost, recoverEndpoint, verificationEndpoint } = mailerEnvs;
+const { recoverEndpoint, verificationEndpoint } = mailerEnvs;
 
 export function getVerificationMail(token: string) {
   const link = getVerificationLink(token);

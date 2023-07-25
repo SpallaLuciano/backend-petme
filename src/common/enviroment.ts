@@ -51,6 +51,7 @@ export const jwtEnvs = parseableEnviroment<JwtEnvs>('JWT');
 export const hashEnvs = parseableEnviroment<HashEnvs>('HASH');
 export const bucketEnvs = parseableEnviroment<BucketEnvs>('BUCKET');
 export const mailerEnvs = parseableEnviroment<MailerEnvs>('MAILER');
+export const frontHost = parseableEnviroment<string>('FRONT_HOST');
 
 function parseableEnviroment<T>(name: string): T {
   const env = process.env[name];

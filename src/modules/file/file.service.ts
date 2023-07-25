@@ -9,6 +9,7 @@ import { Repository } from 'typeorm';
 import { bucketEnvs, ErrorException } from '../../common';
 import { Image, Profile } from '../../entities';
 import { v4 as uuidV4 } from 'uuid';
+import sharp from 'sharp';
 
 const { region, accessKeyId, secretAccessKey, bucketName, endpoint } =
   bucketEnvs;
@@ -89,7 +90,7 @@ export class FileService {
   }
 
   private async uploadFile(file: Express.Multer.File, key: string) {
-    const { contentType, fileStream } = this.getFileMetadata(file);
+    const { contentType, fileStream } = await this.getFileMetadata(file);
 
     const command = new PutObjectCommand({
       Bucket: bucketName,
@@ -114,9 +115,12 @@ export class FileService {
     return deleteResult;
   }
 
-  private getFileMetadata(file: Express.Multer.File) {
-    const fileStream = file.buffer;
+  private async getFileMetadata(file: Express.Multer.File) {
     const contentType = file.mimetype;
+
+    const fileStream = await sharp(file.buffer)
+      .resize({ height: 500, width: 500, fit: 'inside' })
+      .toBuffer();
 
     return {
       fileStream,
