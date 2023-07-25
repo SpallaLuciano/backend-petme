@@ -19,6 +19,7 @@ import {
 } from '../../entities';
 
 const { url, schema } = databaseEnvs();
+console.log('DB URL', url);
 
 export const options: TypeOrmModuleOptions = {
   url,
