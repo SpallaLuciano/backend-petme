@@ -2,11 +2,7 @@ import { InternalServerErrorException } from '@nestjs/common';
 import { config } from 'dotenv';
 
 interface DatabaseEnvs {
-  host: string;
-  port: number;
-  database: string;
-  username: string;
-  password: string;
+  url: string;
   schema: string;
 }
 
