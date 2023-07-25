@@ -1,6 +1,22 @@
 import { config } from 'dotenv';
 import { DataSource, DataSourceOptions } from 'typeorm';
-import { Profile, User } from './src/entities';
+import {
+  Profile,
+  User,
+  Pet,
+  Chat,
+  Comment,
+  Health,
+  Image,
+  Message,
+  OwnerRequest,
+  Evidence,
+  UserValidation,
+  Vaccination,
+  Vaccine,
+  Visit,
+  VisitType,
+} from './src/entities';
 
 config();
 
@@ -14,11 +30,28 @@ export const options: DataSourceOptions = {
   username: db.username,
   password: db.password,
   schema: db.schema,
-  entities: [User, Profile],
+  entities: [
+    Profile,
+    User,
+    Pet,
+    Chat,
+    Comment,
+    Health,
+    Image,
+    Message,
+    OwnerRequest,
+    Evidence,
+    UserValidation,
+    Vaccination,
+    Vaccine,
+    Visit,
+    VisitType,
+  ],
   logging: true,
   synchronize: false,
   migrationsRun: false,
   migrations: [__dirname + '/migrations/**/*{.ts,.js}'],
+  ssl: true,
 };
 
 const dataSource = new DataSource(options);

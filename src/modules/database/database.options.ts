@@ -29,6 +29,7 @@ export const options: TypeOrmModuleOptions = {
   password: password,
   schema: schema,
   entities: [
+    Pet,
     Profile,
     User,
     Image,
@@ -37,7 +38,6 @@ export const options: TypeOrmModuleOptions = {
     Evidence,
     Vaccination,
     Vaccine,
-    Pet,
     VisitType,
     Visit,
     Health,
@@ -47,4 +47,5 @@ export const options: TypeOrmModuleOptions = {
   ],
   logging: true,
   synchronize: true,
+  ssl: true,
 };

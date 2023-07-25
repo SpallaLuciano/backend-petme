@@ -23,17 +23,7 @@ export class Profile extends BaseEntity {
   lastname: string;
 
   @ManyToMany(() => Pet)
-  @JoinTable({
-    name: 'profiles_fav_pets',
-    joinColumn: {
-      name: 'id',
-      referencedColumnName: 'id',
-    },
-    inverseJoinColumn: {
-      name: 'id',
-      referencedColumnName: 'id',
-    },
-  })
+  @JoinTable()
   favs: Pet[];
 
   @Exclude()

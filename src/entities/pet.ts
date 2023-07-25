@@ -77,7 +77,4 @@ export class Pet extends BaseEntity {
 
   @OneToMany(() => OwnerRequest, (ownerRequest) => ownerRequest.pet)
   ownerRequests: OwnerRequest[];
-
-  @ManyToMany(() => Profile)
-  favsFrom: Profile[];
 }

@@ -10,7 +10,6 @@ interface UserPayload {
 
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor() {
-    console.debug(JSON.stringify(jwtEnvs), jwtEnvs.secret);
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
