@@ -80,18 +80,14 @@ export class PetService {
     return pet;
   }
 
-  async removeImage(userId: string, imageId: string): Promise<Pet> {
-    let pet = await this.petRepository
-      .createQueryBuilder('pet')
-      .leftJoinAndSelect('pet.images', 'image', 'image.id = :imageId', {
-        imageId,
-      })
-      .leftJoinAndSelect('pet.owner', 'owner', 'owner.userId = :userId', {
-        userId,
-      })
-      .getOne();
+  async removeImage(
+    userId: string,
+    petId: string,
+    imageId: string,
+  ): Promise<Pet> {
+    let pet = await this.findByUserAndId(userId, petId);
 
-    if (!pet) {
+    if (!pet || !pet.images.some((image) => image.id === imageId)) {
       throw new WarningException(
         'No tiene permisos para realizar la operacion',
       );

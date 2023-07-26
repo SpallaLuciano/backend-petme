@@ -40,8 +40,8 @@ export class PetController {
 
   @Image()
   @Auth()
-  @Post('image/:id') // algo
-  @UseInterceptors(FileInterceptor('file')) // Nest aclara que File Interceptor puede no funcionar en la nube
+  @Post('image/:id')
+  @UseInterceptors(FileInterceptor('file'))
   async updateImage(
     @Request() req,
     @Param('id') id: string,
@@ -53,12 +53,13 @@ export class PetController {
   }
 
   @Auth()
-  @Delete('image/:imageId')
+  @Delete('image/:petId/:imageId')
   async removeImage(
     @Request() req,
     @Param('imageId') imageId: string,
+    @Param('petId') petId: string,
   ): Promise<Response<Pet>> {
-    const pet = await this.petService.removeImage(req.user.id, imageId);
+    const pet = await this.petService.removeImage(req.user.id, petId, imageId);
 
     return successResponse(pet);
   }
