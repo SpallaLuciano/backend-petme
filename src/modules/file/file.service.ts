@@ -9,7 +9,7 @@ import { Repository } from 'typeorm';
 import { ErrorException } from '../../common';
 import { Image, Profile } from '../../entities';
 import { v4 as uuidV4 } from 'uuid';
-import sharp from 'sharp';
+import * as sharp from 'sharp';
 
 @Injectable()
 export class FileService {
@@ -42,7 +42,11 @@ export class FileService {
 
     try {
       const image = this.imageRepository.create({
-        url: `${process.env.BUCKET_ENDPOINT}/${key}`,
+        url: `${process.env.BUCKET_ENDPOINT}/${
+          process.env.NODE_ENV === 'development'
+            ? process.env.BUCKET_NAME + '/'
+            : ''
+        }${key}`,
         description,
       });
 
@@ -117,10 +121,15 @@ export class FileService {
 
   private async getFileMetadata(file: Express.Multer.File) {
     const contentType = file.mimetype;
+    let fileStream: Buffer;
 
-    const fileStream = await sharp(file.buffer)
-      .resize({ height: 500, width: 500, fit: 'inside' })
-      .toBuffer();
+    try {
+      fileStream = await sharp(file.buffer)
+        .resize({ height: 700, width: 700, fit: 'inside' })
+        .toBuffer();
+    } catch (error) {
+      throw new ErrorException('Hubo un error al reducir la imagen', error);
+    }
 
     return {
       fileStream,

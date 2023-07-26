@@ -39,7 +39,7 @@ export class PetService {
 
     pet = Object.assign(pet, dto);
 
-    pet = await this.petRepository.save(pet);
+    await this.petRepository.save(pet);
 
     return pet;
   }
@@ -113,6 +113,13 @@ export class PetService {
   private async findByUserAndId(userId: string, petId: string): Promise<Pet> {
     const pet = await this.petRepository.findOne({
       where: { id: petId, owner: { user: { id: userId } } },
+      relations: {
+        health: true,
+        images: true,
+      },
+      loadRelationIds: {
+        relations: ['owner'],
+      },
     });
 
     if (!pet) {
@@ -123,7 +130,16 @@ export class PetService {
   }
 
   async findById(id: string): Promise<Pet> {
-    const pet = await this.petRepository.findOneBy({ id });
+    const pet = await this.petRepository.findOne({
+      where: { id },
+      relations: {
+        health: true,
+        images: true,
+      },
+      loadRelationIds: {
+        relations: ['owner'],
+      },
+    });
 
     if (!pet) {
       throw new WarningException('No se encontro la mascota');

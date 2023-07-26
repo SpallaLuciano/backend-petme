@@ -38,10 +38,13 @@ export const options: TypeOrmModuleOptions = {
     Message,
     UserValidation,
   ],
-  logging: true,
-  synchronize: true,
-  ssl: {
-    rejectUnauthorized: false,
-    requestCert: true,
-  },
+  logging: process.env.NODE_ENV === 'development',
+  synchronize: process.env.NODE_ENV === 'development',
+  ssl:
+    process.env.NODE_ENV === 'development'
+      ? false
+      : {
+          rejectUnauthorized: false,
+          requestCert: true,
+        },
 };
