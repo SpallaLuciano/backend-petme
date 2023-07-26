@@ -42,11 +42,7 @@ export class FileService {
 
     try {
       const image = this.imageRepository.create({
-        url: `${process.env.BUCKET_ENDPOINT}/${
-          process.env.NODE_ENV === 'development'
-            ? process.env.BUCKET_NAME + '/'
-            : ''
-        }${key}`,
+        url: `${process.env.BUCKET_ENDPOINT}/${process.env.BUCKET_NAME}/${key}`,
         description,
       });
 
