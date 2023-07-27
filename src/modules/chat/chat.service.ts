@@ -25,12 +25,16 @@ export class ChatService {
   }
 
   async findChatByUsers(users: [Profile, Profile]) {
-    const profilesToInclude = users.map((user) => user.id);
+    const [profileId1, profileId2] = users.map((user) => user.id);
 
     const chat = await this.chatRepository
       .createQueryBuilder('chats')
-      .leftJoinAndSelect('chats.users', 'profile')
-      .where('profile.id IN (:...ids)', { ids: profilesToInclude })
+      .innerJoin('chats.users', 'profile1', 'profile1.id = :profileId1', {
+        profileId1,
+      })
+      .innerJoin('chats.users', 'profile2', 'profile2.id = :profileId2', {
+        profileId2,
+      })
       .getOne();
 
     return chat;

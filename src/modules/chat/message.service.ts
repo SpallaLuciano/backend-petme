@@ -18,7 +18,7 @@ export class MessageService {
 
     return await this.messageRepository.findOne({
       where: { id: message.id },
-      relations: { chat: { messages: true } },
+      relations: { chat: true },
       loadRelationIds: {
         relations: ['sender', 'receiver'],
       },
