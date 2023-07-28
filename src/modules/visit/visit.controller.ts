@@ -45,12 +45,12 @@ export class VisitController {
   @Put(':visitId')
   async update(
     @Request() req,
-    @Param() visitId: string,
+    @Param('visitId') visitId: string,
     @Body() dto: UpdateDto,
   ): Promise<Response<Health>> {
-    const visit = await this.visitService.update(req.user.id, visitId, dto);
+    const health = await this.visitService.update(req.user.id, visitId, dto);
 
-    return successResponse(visit);
+    return successResponse(health);
   }
 
   @Auth()

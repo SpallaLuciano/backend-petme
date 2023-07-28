@@ -70,7 +70,12 @@ export class VisitService {
 
     await this.visitRepository.save(visit);
 
-    return this.healthService.findOneByUserAndId(userId, visit.health.id);
+    return await this.healthService.findOneByUserAndId(
+      userId,
+      visit.health.id,
+      [],
+      ['pet'],
+    );
   }
 
   async remove(userId, visitId): Promise<Health> {

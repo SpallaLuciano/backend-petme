@@ -116,7 +116,7 @@ export class VaccinationService {
 
     return await this.healthService.findOneByUserAndId(
       userId,
-      vaccination.health.id,
+      vaccination.health as unknown as string,
       ['vaccinations', 'visits'],
       ['pet'],
     );
